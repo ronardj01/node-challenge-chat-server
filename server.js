@@ -31,7 +31,7 @@ app.get('/messages/:id', (req, res) => {
   if (isValidId) {
     const message = messages.find((message) => message.id == id);
 
-    return message ? res.json(message) : res.sendStatus(400)
+    return message ? res.json(message) : res.status(400).send('Id does not match with a message')
   } else {
     res.send('Id must be a number larger than zero')
   }
@@ -40,9 +40,16 @@ app.get('/messages/:id', (req, res) => {
 app.post('/messages', (req, res) => {
   const newId = Math.max(...messages.map((message) => message.id)) + 1;
   const newMessage = req.body;
+  
   newMessage.id = newId;
-  messages.push(newMessage);
-  return res.status(201).json(messages);
+
+  isNewMessageValid = (newMessage.text && newMessage.from)
+  if(isNewMessageValid) {
+    messages.push(newMessage);
+    return res.status(201).json(messages);  
+  } else {
+    res.status(400).send('Text and From propierties are requiere');
+  }
 });
 
 app.delete('/messages/:id', (req, res) => {
