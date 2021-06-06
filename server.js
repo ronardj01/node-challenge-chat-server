@@ -25,6 +25,18 @@ app.get('/messages', (req, res) => {
   return res.json(messages);
 });
 
+app.get('/messages/search', (req, res) => {
+  const text = req.query.text.toLocaleLowerCase();
+  const searchedMessage = messages.filter(m => m.text.toLocaleLowerCase().includes(text))
+
+  searchedMessage.length > 0 ? res.status(200).json(searchedMessage) : res.send('There are not messages with that text')
+});
+
+app.get('/messages/latest', (req, res) => {
+  const latestMessages = messages.slice(-10);
+  return res.send(latestMessages)
+});
+
 app.get('/messages/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const isValidId = (!isNaN(id) && id >= 0);
