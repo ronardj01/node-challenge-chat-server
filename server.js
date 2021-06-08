@@ -52,13 +52,15 @@ app.get('/messages/:id', (req, res) => {
 app.post('/messages', (req, res) => {
   const newId = Math.max(...messages.map((message) => message.id)) + 1;
   const newMessage = req.body;
-  
+
   newMessage.id = newId;
 
   isNewMessageValid = (newMessage.text && newMessage.from)
-  if(isNewMessageValid) {
+  if (isNewMessageValid) {
+    const timeSent = new Date().toDateString();
+    newMessage.timeSent = timeSent;
     messages.push(newMessage);
-    return res.status(201).json(messages);  
+    return res.status(201).json(messages);
   } else {
     res.status(400).send('Text and From propierties are requiere');
   }
@@ -83,6 +85,26 @@ app.delete('/messages/:id', (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log("Listening on port 3000")
+app.put('/messages/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const isValidId = (!isNaN(id) && id >= 0);
+
+  if (isValidId) {
+    const updateMessage = req.body;
+
+    if (updateMessage.text || updateMessage.form) {
+      messageToUpdate = messages.find(m => m.id == id);
+      messageToUpdate.text = updateMessage.text;
+      messageToUpdate.from = updateMessage.from;
+      res.json(messageToUpdate);
+    } else {
+      res.send('Text or form field are require')
+    }
+  } else {
+    res.send('Id must be a number larger than zero')
+  }
+})
+
+app.listen(3001, () => {
+  console.log("Listening on port 3001")
 });
