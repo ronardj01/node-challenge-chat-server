@@ -94,8 +94,11 @@ app.put('/messages/:id', (req, res) => {
 
     if (updateMessage.text || updateMessage.form) {
       messageToUpdate = messages.find(m => m.id == id);
-      messageToUpdate.text = updateMessage.text;
-      messageToUpdate.from = updateMessage.from;
+      //messageToUpdate.text = updateMessage.text;
+      //messageToUpdate.from = updateMessage.from; 
+
+      messageToUpdate = { ...messageToUpdate, ...updateMessage }
+
       res.json(messageToUpdate);
     } else {
       res.send('Text or form field are require')
